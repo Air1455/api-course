@@ -2,13 +2,25 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Core\Annotation\ApiFilter;
+use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ * @ApiResource(
+ *     normalizationContext={"groups"={"read:customer"}}
+ * )
+ * @ApiFilter(
+ *     SearchFilter::class, properties={"firstName": "partial", "lastName", "invoice.status":"partial"}
+ * )
+ * @ApiFilter(OrderFilter::class)
  */
 class Customer
 {
@@ -21,16 +33,19 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read:customer"})
      */
     private $firstName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read:customer"})
      */
     private $lastName;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read:customer"})
      */
     private $email;
 
@@ -41,11 +56,13 @@ class Customer
 
     /**
      * @ORM\OneToMany(targetEntity=Invoice::class, mappedBy="customer")
+     * @Groups({"read:customer"})
      */
     private $invoices;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
+     * @Groups({"read:customer"})
      */
     private $user;
 

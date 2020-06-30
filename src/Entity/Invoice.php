@@ -7,6 +7,7 @@ use ApiPlatform\Core\Annotation\ApiResource;
 use App\Repository\InvoiceRepository;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=InvoiceRepository::class)
@@ -24,21 +25,25 @@ class Invoice
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"read:customer"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="float")
+     * @Groups({"read:customer"})
      */
     private $amount;
 
     /**
      * @ORM\Column(type="datetime")
+     * @Groups({"read:customer"})
      */
     private $sentAt;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"read:customer"})
      */
     private $status;
 
@@ -50,8 +55,17 @@ class Invoice
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"read:customer"})
      */
     private $chrono;
+
+    /**
+     * @return User
+     * @Groups({"read:invoices"})
+     */
+    public function getUser() : User {
+        return $this->customer->getUser();
+    }
 
     public function getId(): ?int
     {

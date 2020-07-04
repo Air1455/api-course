@@ -60,6 +60,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Groups({"read:customer","invoices_subresource"})
      */
     private $company;
 

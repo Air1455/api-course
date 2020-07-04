@@ -26,20 +26,23 @@ class  CurrentUserExtension implements QueryCollectionExtensionInterface, QueryI
     private function addWhere(QueryBuilder $queryBuilder, string $resourceClass)
     {
         $user = $this->security->getUser();
-
-        if(($resourceClass === Customer::class || $resourceClass === Invoice::class)
-            && !$this->auth->isGranted('ROLE_ADMIN')
-            && $user instanceof User
-        ){
-            $rootAlias = $queryBuilder->getRootAliases()[0];
-            if($resourceClass === Customer::class){
-                $queryBuilder->andWhere("$rootAlias.user = :user");
-            } else if($resourceClass === Invoice::class){
-                $queryBuilder->join("$rootAlias.customer", "c")
-                    ->andWhere("c.user = :user");
+        if($user != null){
+            if(($resourceClass === Customer::class || $resourceClass === Invoice::class)
+                && !$this->auth->isGranted('ROLE_ADMIN')
+                && $user instanceof User
+            ){
+                $rootAlias = $queryBuilder->getRootAliases()[0];
+                if($resourceClass === Customer::class){
+                    $queryBuilder->andWhere("$rootAlias.user = :user");
+                } else if($resourceClass === Invoice::class){
+                    $queryBuilder->join("$rootAlias.customer", "c")
+                        ->andWhere("c.user = :user");
+                }
             }
+            $queryBuilder->setParameter("user", $user);
         }
-        $queryBuilder->setParameter("user", $user);
+
+
     }
 
     public function applyToCollection(QueryBuilder $queryBuilder, QueryNameGeneratorInterface $queryNameGenerator, string $resourceClass, string $operationName = null)

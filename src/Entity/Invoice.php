@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *     normalizationContext={"groups":"read:invoices"},
  *     denormalizationContext={"disable_type_enforcement"=true},
  *     attributes={
- *      "pagination_enabled"=true,
+ *      "pagination_enabled"=false,
  *      "order": {"amount":"desc"}
  *     },
  *     itemOperations={
@@ -69,6 +69,7 @@ class Invoice
     /**
      * @ORM\ManyToOne(targetEntity=Customer::class, inversedBy="invoices")
      * @ORM\JoinColumn(nullable=false)
+     * * @Groups({"read:invoices"})
      * @Assert\NotBlank(message="Le client doit être renseigné")
      */
     private $customer;

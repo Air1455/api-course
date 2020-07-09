@@ -36,7 +36,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"read:customer","invoices_subresource"})
+     * @Groups({"read:customer","invoices_subresource", "read:invoices"})
      * @Assert\NotBlank(message="Le prénom est obligatoire")
      * @Assert\Length(min=3, minMessage="Le prénom doit faire entre 3 et 255 caractères", max=255, maxMessage="Le prénom doit faire entre 3 et 255 caractères")
      */
@@ -44,7 +44,7 @@ class Customer
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"read:customer","invoices_subresource"})
+     * @Groups({"read:customer","invoices_subresource", "read:invoices"})
      * @Assert\NotBlank(message="Le nom est obligatoire")
      * @Assert\Length(min=3, minMessage="Le nom doit faire entre 3 et 255 caractères", max=255, maxMessage="Le nom doit faire entre 3 et 255 caractères")
      */

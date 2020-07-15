@@ -11,6 +11,7 @@ import LoginPage from "./pages/LoginPage";
 import authAPI from "./services/authAPI";
 import AuthContext from "./contexts/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
+import InvoicePage from "./pages/InvoicePage";
 
 authAPI.setup();
 
@@ -29,6 +30,7 @@ const App = () => {
                             render={props => (<LoginPage onLogin={setIsAuthenticated} {...props} />
                             )}
                         />
+                        <PrivateRoute path="/invoices/:id" component={InvoicePage} />
                         <PrivateRoute path="/invoices" component={InvoicesPage} />
                         <PrivateRoute path="/customers/:id" component={CustomerPage} />
                         <PrivateRoute path="/customers" component={CustomersPage} />

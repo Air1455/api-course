@@ -84,7 +84,7 @@ const CustomersPage = () => {
                 {paginatedCustomers.map(customer =>
                     <tr key={customer.id}>
                         <td>{customer.id}</td>
-                        <td><a href="#">{customer.firstName}{customer.lastName}</a></td>
+                        <td><a href="#">{customer.firstName} {customer.lastName}</a></td>
                         <td>{customer.email}</td>
                         <td>{customer.company}</td>
                         <td><span className="badge badge-primary">{customer.invoices.length}</span></td>

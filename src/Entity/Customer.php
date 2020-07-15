@@ -30,7 +30,7 @@ class Customer
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"read:customer","invoices_subresource"})
+     * @Groups({"read:customer","invoices_subresource", "read:invoices"})
      */
     private $id;
 

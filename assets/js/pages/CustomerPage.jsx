@@ -1,9 +1,12 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Field from './../components/forms/Field';
 import {Link} from "react-router-dom";
-import axios from 'axios';
+import customersAPI from "../services/customersAPI";
 
-const CustomerPage = (props) => {
+const CustomerPage = ({match, history}) => {
+
+    const {id = "new"} = match.params;
+
     const [customer, setCustomer] = useState({
         lastName:'',
         firstName:'',
@@ -11,29 +14,58 @@ const CustomerPage = (props) => {
         company:''
     });
 
-    const handleChange = ({currentTarget}) => {
-        const {name, value} = currentTarget;
-        setCustomer({...customer, [name]:value});
-    };
-
     const [errors, setErrors] = useState({
         lastName:'',
         firstName:'',
         email:'',
         company:''
     });
+    
+    const [editing, setEditing] = useState(false);
 
+    // Recupération du customer en fonction de l'identifiant
+    const fetchCustomer = async id => {
+        try {
+            const{firstName, lastName, email, company} = await customersAPI.find(id);
+            setCustomer({firstName, lastName, email, company});
+        } catch (e) {
+            console.log(e.response);
+            history.replace("/customers");
+        }
+    }
+
+    // Chargement du customer si besoin au chargement du composant ou au changement de l'identifiant
+    useEffect(() => {
+        if(id !== "new") {
+            setEditing(true);
+            fetchCustomer(id);
+        }
+    }, [id]);
+
+    // Gestion des changements des inputs dans le formulaire
+    const handleChange = ({currentTarget}) => {
+        const {name, value} = currentTarget;
+        setCustomer({...customer, [name]:value});
+    };
+
+    // Gestion de la soumission du formulaire
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await axios
-                .post("http://localhost:8000/api/customers", customer);
-                setErrors({});
-        }catch (error) {
-            if(error.response.data.violations){
+            if(editing){
+                await customersAPI.update(id, customer);
+            }else{
+                await customersAPI.create(customer);
+                history.replace("/customers");
+            }
+            setErrors({});
+
+        }catch ({response}) {
+            const {violations} = response.data;
+            if(violations){
                 const apiErrors = {};
-                error.response.data.violations.map(violation => {
-                    apiErrors[violation.propertyPath] = violation.message;
+                violations.map(({propertyPath, message}) => {
+                    apiErrors[propertyPath] = message;
                 });
                 setErrors(apiErrors);
             }
@@ -42,8 +74,8 @@ const CustomerPage = (props) => {
 
     return (
         <>
-            <h1>Création d'un client</h1>
-            <form onSubmit={handleSubmit}>
+            <h1 className="text-center">{!editing && (<>Création d'un client</>) || (<>Modification du client</>)}</h1>
+            <form onSubmit={handleSubmit} className="mt-5">
                 <Field name="lastName" label="Nom de famille" placeholder="Nom de famille du client" value={customer.lastName} onChange={handleChange} error={errors.lastName}/>
                 <Field name="firstName" label="Prénom" placeholder="Prénom du client" value={customer.firstName} onChange={handleChange} error={errors.firstName}/>
                 <Field name="email" label="Email" placeholder="Adresse email du client" type="email" value={customer.email} onChange={handleChange} error={errors.email}/>

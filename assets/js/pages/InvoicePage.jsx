@@ -69,13 +69,14 @@ const InvoicePage = ({match, history}) => {
         try {
             if(editing){
                 await invoicesAPI.update(id, invoice);
+                setErrors({});
             }else{
                 await invoicesAPI.create(invoice);
+                setErrors({});
                 history.replace("/invoices");
             }
-            setErrors({});
-
         }catch ({response}) {
+            console.log(response);
             const {violations} = response.data;
             if(violations){
                 const apiErrors = {};

@@ -2,16 +2,19 @@ import React, { useEffect, useState } from 'react';
 import Pagination from "../components/Pagination";
 import CustomersAPI from "../services/customersAPI";
 import {Link} from "react-router-dom";
+import TableLoader from "../components/Loader/TableLoadre";
 
 const CustomersPage = () => {
     const [customers, setCustomers] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const [search, setSearch] = useState('');
+    const [loading, setLoading] = useState(true);
 
     const fetchCustomers = async () => {
         try {
             const data = await CustomersAPI.findAll()
             setCustomers(data)
+            setLoading(false);
         } catch (e) {
             console.log(e.response)
         }
@@ -80,11 +83,11 @@ const CustomersPage = () => {
                     <th></th>
                 </tr>
                 </thead>
-                <tbody>
+                {!loading && <tbody>
                 {paginatedCustomers.map(customer =>
                     <tr key={customer.id}>
                         <td>{customer.id}</td>
-                        <td><a href="#">{customer.firstName} {customer.lastName}</a></td>
+                        <td><Link to={"/customers/" + customer.id}>{customer.firstName} {customer.lastName}</Link></td>
                         <td>{customer.email}</td>
                         <td>{customer.company}</td>
                         <td><span className="badge badge-primary">{customer.invoices.length}</span></td>
@@ -101,8 +104,9 @@ const CustomersPage = () => {
                     </tr>
                 )}
 
-                </tbody>
+                </tbody>}
             </table>
+            {loading && <TableLoader />}
             {itemsPerPage < filteredCustomers.length && <Pagination
                 currentPage={currentPage}
                 itemsPerPage={itemsPerPage}

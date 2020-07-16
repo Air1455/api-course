@@ -3,6 +3,7 @@ import Field from "../components/forms/Field";
 import {Link} from "react-router-dom";
 import registerAPI from "../services/registerAPI";
 import customersAPI from "../services/customersAPI";
+import {toast} from "react-toastify";
 
 
 const RegisterPage = ({match, history}) => {
@@ -65,6 +66,7 @@ const RegisterPage = ({match, history}) => {
         if(user.password !== user.passwordConfirm){
             apiErrors.passwordConfirm = "Le mot de passe doit être identique";
             setErrors(apiErrors);
+            toast.error("Des erreurs dans votre formulaire !");
             return;
         }
         try {
@@ -74,6 +76,7 @@ const RegisterPage = ({match, history}) => {
             }else{
                 await registerAPI.create(user);
                 setErrors({});
+                toast.success("Vous êtes désormais inscrit, vous pouvez vous connecté !");
                 history.replace("/login");
             }
         }catch ({response}) {
@@ -84,6 +87,7 @@ const RegisterPage = ({match, history}) => {
                 });
                 setErrors(apiErrors);
             }
+            toast.error("Des erreurs dans votre formulaire !");
         }
     }
 

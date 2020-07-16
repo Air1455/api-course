@@ -2,11 +2,12 @@ import React, {useState, useEffect} from 'react';
 import Field from './../components/forms/Field';
 import {Link} from "react-router-dom";
 import customersAPI from "../services/customersAPI";
+import FormContentLoader from "../components/Loader/FormContentLoader";
 
 const CustomerPage = ({match, history}) => {
 
     const {id = "new"} = match.params;
-
+    const [loading, setLoading] = useState(false);
     const [customer, setCustomer] = useState({
         lastName:'',
         firstName:'',
@@ -28,6 +29,7 @@ const CustomerPage = ({match, history}) => {
         try {
             const{firstName, lastName, email, company} = await customersAPI.find(id);
             setCustomer({firstName, lastName, email, company});
+            setLoading(false);
         } catch (e) {
             console.log(e.response);
             history.replace("/customers");
@@ -37,6 +39,7 @@ const CustomerPage = ({match, history}) => {
     // Chargement du customer si besoin au chargement du composant ou au changement de l'identifiant
     useEffect(() => {
         if(id !== "new") {
+            setLoading(true);
             setEditing(true);
             fetchCustomer(id);
         }
@@ -52,13 +55,13 @@ const CustomerPage = ({match, history}) => {
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
+            setErrors({});
             if(editing){
                 await customersAPI.update(id, customer);
             }else{
                 await customersAPI.create(customer);
                 history.replace("/customers");
             }
-            setErrors({});
 
         }catch ({response}) {
             const {violations} = response.data;
@@ -75,7 +78,8 @@ const CustomerPage = ({match, history}) => {
     return (
         <>
             <h1 className="text-center">{!editing && (<>Création d'un client</>) || (<>Modification du client</>)}</h1>
-            <form onSubmit={handleSubmit} className="mt-5">
+            {loading && <FormContentLoader />}
+            {!loading && <form onSubmit={handleSubmit} className="mt-5">
                 <Field name="lastName" label="Nom de famille" placeholder="Nom de famille du client" value={customer.lastName} onChange={handleChange} error={errors.lastName}/>
                 <Field name="firstName" label="Prénom" placeholder="Prénom du client" value={customer.firstName} onChange={handleChange} error={errors.firstName}/>
                 <Field name="email" label="Email" placeholder="Adresse email du client" type="email" value={customer.email} onChange={handleChange} error={errors.email}/>
@@ -85,7 +89,7 @@ const CustomerPage = ({match, history}) => {
                     <button type="submit" className="btn btn-success">Enregistrer</button>
                     <Link to="/customers" className="btn btn-link">Retour à la liste</Link>
                 </div>
-            </form>
+            </form>}
         </>
     );
 };

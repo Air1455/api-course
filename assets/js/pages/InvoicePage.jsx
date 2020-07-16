@@ -4,11 +4,14 @@ import {Link} from "react-router-dom";
 import invoicesAPI from "../services/invoicesAPI";
 import Select from "../components/forms/Select";
 import customersAPI from "../services/customersAPI";
+import {toast} from "react-toastify";
+import FormContentLoader from "../components/Loader/FormContentLoader";
 
 const InvoicePage = ({match, history}) => {
 
     const {id = "new"} = match.params;
     const [customers, setCustomers] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [invoice, setInvoice] = useState({
         amount:'',
         customer:'',
@@ -25,10 +28,12 @@ const InvoicePage = ({match, history}) => {
         try{
             const data = await customersAPI.findAll();
             setCustomers(data);
+            setLoading(false);
 
             if(!invoice.customer) setInvoice({...invoice, customer: data[0].id})
         }catch (e) {
             console.log(e.response)
+            toast.error("Impossible de charger les clients !");
         }
     }
 
@@ -42,9 +47,11 @@ const InvoicePage = ({match, history}) => {
     const fetchInvoice = async id => {
         try {
             const{amount, customer, status} = await invoicesAPI.find(id);
+            setLoading(false);
             setInvoice({amount, customer: customer.id, status});
         } catch (e) {
             console.log(e.response);
+            toast.error("Impossible de charger la facture demandé !");
             history.replace("/invoices");
         }
     }
@@ -69,10 +76,12 @@ const InvoicePage = ({match, history}) => {
         try {
             if(editing){
                 await invoicesAPI.update(id, invoice);
+                toast.success("La facture a bien été modifié !");
                 setErrors({});
             }else{
                 await invoicesAPI.create(invoice);
                 setErrors({});
+                toast.success("La facture a bien été enregistré !");
                 history.replace("/invoices");
             }
         }catch ({response}) {
@@ -91,7 +100,8 @@ const InvoicePage = ({match, history}) => {
     return (
         <>
             <h1 className="text-center">{!editing && (<>Création d'une facture</>) || (<>Modification de la facture</>)}</h1>
-            <form onSubmit={handleSubmit} className="mt-5">
+            {loading && <FormContentLoader />}
+            {!loading && <form onSubmit={handleSubmit} className="mt-5">
                 <Field name="amount" type="number" label="Montant" placeholder="Montant de la facture" value={invoice.amount} onChange={handleChange} error={errors.amount}/>
                 <Select name="customer" label="Client" placeholder="Client" value={invoice.customer} onChange={handleChange} error={errors.customer}>
                     {customers.map(customer => <option key={customer.id} value={customer.id}>{customer.firstName} {customer.lastName}</option> )}
@@ -106,7 +116,7 @@ const InvoicePage = ({match, history}) => {
                     <button type="submit" className="btn btn-success">Enregistrer</button>
                     <Link to="/invoices" className="btn btn-link">Retour à la liste</Link>
                 </div>
-            </form>
+            </form>}
         </>
     );
 };

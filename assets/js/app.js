@@ -13,12 +13,15 @@ import AuthContext from "./contexts/AuthContext";
 import PrivateRoute from "./components/PrivateRoute";
 import InvoicePage from "./pages/InvoicePage";
 import RegisterPage from "./pages/RegisterPage";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import {toast} from "react-toastify";
 
 authAPI.setup();
 
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(authAPI.isAuthenticated());
-    const NavbarWithRouter = withRouter(Navbar)
+    const NavbarWithRouter = withRouter(Navbar);
 
     return (
         <AuthContext.Provider value={{isAuthenticated, setIsAuthenticated}}>
@@ -38,8 +41,8 @@ const App = () => {
                         <PrivateRoute path="/customers" component={CustomersPage} />
                         <Route path="/" component={HomePage} />
                     </Switch>
-
                 </main>
+                <ToastContainer position={toast.POSITION.BOTTOM_LEFT}/>
             </HashRouter>
         </AuthContext.Provider>
     );

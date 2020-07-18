@@ -6,6 +6,7 @@ import InvoicesAPI from "../services/invoicesAPI";
 import {Link} from "react-router-dom";
 import {toast} from "react-toastify";
 import TableLoader from "../components/Loader/TableLoadre";
+import {INVOICES_API} from "../config";
 
 const STATUS_CLASSES = {
     PAID: "success",
@@ -29,7 +30,7 @@ const InvoicesPage = props => {
     const fetchInvoices = async () => {
         try{
             const data = await axios
-                .get("http://localhost:8000/api/invoices")
+                .get(INVOICES_API)
                 .then(response => response.data["hydra:member"]);
             setInvoices(data);
             setLoading(false);

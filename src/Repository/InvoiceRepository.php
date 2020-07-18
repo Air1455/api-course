@@ -34,8 +34,8 @@ class InvoiceRepository extends ServiceEntityRepository
                 ->setMaxResults(1)
                 ->getQuery()
                 ->getSingleScalarResult() + 1;
-        } catch (NoResultException $e) {
-        } catch (NonUniqueResultException $e) {
+        } catch (\Exception $e) {
+            return 1;
         }
 
     }

@@ -1,26 +1,27 @@
 import axios from "axios";
+import {USERS_API} from "../config";
 
 function findAll() {
     return axios
-        .get("http://localhost:8000/api/users")
+        .get(USERS_API)
         .then(response => response.data["hydra:member"]);
 }
 
 function deleteCustomer(id) {
     return axios
-        .delete("http://localhost:8000/api/users/"+id);
+        .delete(USERS_API + "/" +id);
 }
 
 function find(id) {
-    return axios.get("http://localhost:8000/api/users/" + id).then(response => response.data);
+    return axios.get(USERS_API + "/" +id).then(response => response.data);
 }
 
 function update(id, user) {
-    return axios.put("http://localhost:8000/api/users/" +id, user);
+    return axios.put(USERS_API + "/" +id, user);
 }
 
 function create(user) {
-    return axios.post("http://localhost:8000/api/users", user);
+    return axios.post(USERS_API, user);
 }
 
 export default {

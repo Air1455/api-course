@@ -27,6 +27,7 @@ const LoginPage = ({onLogin, history}) => {
             toast.success("Vous êtes désormais connecté")
             history.replace('/customers');
         }catch (e) {
+            console.log(e.response)
             setError('Aucun compte ne possède cette email ou alors les informations ne correpondent pas');
             toast.error("Une erreur est survenue !");
         }

@@ -20,7 +20,7 @@ const CustomersPage = () => {
         }
     }
     useEffect(() => {
-        fetchCustomers();
+        fetchCustomers().then(console.log(customers));
     }, []);
 
     // Suppression d'un customer
